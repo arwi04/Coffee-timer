@@ -30,7 +30,6 @@
       margin: 0;
       font-weight: 600;
       font-size: 1.2rem;
-      color: #fff;
     }
     #settingsBtn {
       background: #FF8C00;
@@ -59,7 +58,7 @@
       flex-direction: row;
     }
     .panel {
-      background: #E3F2FD; /* light blue panel background */
+      background: #E3F2FD;
       flex: 1;
       margin: 0.5rem;
       border-radius: 12px;
@@ -74,7 +73,6 @@
       background: #007BFF;
       color: #fff;
       font-weight: 600;
-      font-size: 1rem;
       text-align: center;
     }
     .panel-content {
@@ -85,7 +83,7 @@
       overflow-y: auto;
     }
     .coffee-card, .maint-card {
-      background: #FFFDE7; /* light yellow cards */
+      background: #FFFDE7;
       border-radius: 8px;
       padding: 0.75rem;
       margin: 0.5rem 0;
@@ -95,7 +93,6 @@
     }
     .coffee-card span, .maint-card span {
       font-weight: 500;
-      color: #333;
     }
     .coffee-card button, .maint-card button {
       background: #FF8C00;
@@ -105,30 +102,30 @@
       color: #fff;
       cursor: pointer;
     }
+    /* Einstellungen horizontal with two columns */
     #settingsScreen {
       flex-direction: column;
     }
     #settingsContent {
       flex: 1;
       display: flex;
-      flex-direction: row;
-      overflow-x: auto;
+      flex-wrap: wrap;
+      overflow-y: auto;
       padding: 0.5rem;
-      background: #FFF3E0; /* light orange settings background */
+      background: #FFF3E0;
     }
     .setting-card {
-      background: #FFE0B2; /* light peach setting cards */
+      background: #FFE0B2;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 0.75rem;
-      margin: 0 0.5rem;
-      flex: 0 0 calc(20% - 1rem);
+      margin: 0.5rem;
+      flex: 0 0 calc(50% - 1rem);
       display: flex;
       flex-direction: column;
     }
     .setting-card input[type="checkbox"] { margin-bottom: 0.5rem; }
     .setting-card input[type="text"], .setting-card input[type="number"] {
-      width: 100%;
       margin-top: 0.25rem;
       padding: 0.4rem;
       border-radius: 6px;
