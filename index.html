@@ -21,7 +21,9 @@
     .panel h2 { margin: 0; padding: 0.75rem; background: #007BFF; color: #fff; font-weight: 600; text-align: center; }
     .panel-content { flex: 1; padding: 0.5rem; display: flex; flex-direction: column; overflow-y: auto; }
     .coffee-card, .maint-card { background: #FFFDE7; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; }
-    .coffee-card span, .maint-card span { font-weight: 500; }
+    .coffee-card span { font-weight: bold; }
+    .maint-card span { font-weight: bold; }
+    .warning { color: red; font-weight: bold; }
     .coffee-card button, .maint-card button { background: #FF8C00; border: none; border-radius: 6px; padding: 0.25rem 0.75rem; color: #fff; cursor: pointer; }
     /* Settings Screen: two columns */
     #settingsScreen { flex-direction: row; }
@@ -81,19 +83,50 @@
     if(diff>0){ settings.maints.forEach(m=> m.remaining = Math.max(0, m.remaining-diff)); settings.lastDate = today; saveSettings(); }
     function saveSettings(){ localStorage.setItem(storageKey, JSON.stringify(settings)); renderMain(); }
     function renderMain(){
-      const sel = document.getElementById('selectedCoffees'); sel.innerHTML='';
+      const sel = document.getElementById('selectedCoffees'); sel.innerHTML = '';
       settings.coffees.filter(c=>c.selected).slice(0, settings.chooseLimit)
-        .forEach(c=>{ const card=document.createElement('div'); card.className='coffee-card'; const text=document.createElement('span'); text.textContent=`${c.name}: Mahlgrad ${c.grind}`; card.append(text); sel.append(card); });
-      const ml = document.getElementById('maintList'); ml.innerHTML='';
-      settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='maint-card'; const text=document.createElement('span'); text.textContent=`${m.name}: ${m.remaining} Tage`; const btn=document.createElement('button'); btn.textContent='Reset'; btn.onclick=()=>{ m.remaining=m.interval; saveSettings(); }; card.append(text,btn); ml.append(card); });
+        .forEach(c => {
+          const card = document.createElement('div'); card.className = 'coffee-card';
+          const text = document.createElement('span'); text.textContent = `${c.name}: Mahlgrad ${c.grind}`;
+          card.append(text);
+          sel.append(card);
+        });
+      const ml = document.getElementById('maintList'); ml.innerHTML = '';
+      settings.maints.forEach(m => {
+        const card = document.createElement('div'); card.className = 'maint-card';
+        const text = document.createElement('span'); text.textContent = `${m.name}: ${m.remaining} Tage`;
+        if (m.remaining <= 0) text.classList.add('warning');
+        const btn = document.createElement('button'); btn.textContent = 'Reset'; btn.onclick = () => { m.remaining = m.interval; saveSettings(); };
+        card.append(text, btn);
+        ml.append(card);
+      });
     }
     function renderSettings(){
-      const cs = document.getElementById('coffeeSettingsList'); cs.innerHTML='';
-      settings.coffees.forEach(c=>{ const card=document.createElement('div'); card.className='setting-card'; const chk=document.createElement('input'); chk.type='checkbox'; chk.checked=c.selected; chk.onchange=()=>{ c.selected=chk.checked; saveSettings(); }; const name=document.createElement('input'); name.type='text'; name.value=c.name; name.oninput=()=>{ c.name=name.value; saveSettings(); }; const grind=document.createElement('input'); grind.type='number'; grind.min=10; grind.max=40; grind.step=1; grind.value=c.grind; grind.onchange=()=>{ c.grind=Math.min(40,Math.max(10,parseInt(grind.value))); saveSettings(); }; card.append(chk,name,grind); cs.append(card); });
-      const ms = document.getElementById('maintenanceSettingsList'); ms.innerHTML='';
-      settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='setting-card'; const name=document.createElement('input'); name.type='text'; name.value=m.name; name.oninput=()=>{ m.name=name.value; saveSettings(); }; const interval=document.createElement('input'); interval.type='number'; interval.min=1; interval.value=m.interval; interval.onchange=()=>{ m.interval=Math.max(1,parseInt(interval.value)); m.remaining=m.interval; saveSettings(); }; card.append(name,interval); ms.append(card); });
+      const cs = document.getElementById('coffeeSettingsList'); cs.innerHTML = '';
+      settings.coffees.forEach(c => {
+        const card = document.createElement('div'); card.className = 'setting-card';
+        const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = c.selected; chk.onchange = () => { c.selected = chk.checked; saveSettings(); };
+        const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.value = c.name; nameInput.oninput = () => { c.name = nameInput.value; saveSettings(); };
+        const grindInput = document.createElement('input'); grindInput.type = 'number'; grindInput.min = 10; grindInput.max = 40; grindInput.step = 1; grindInput.value = c.grind; grindInput.onchange = () => { c.grind = Math.min(40, Math.max(10, parseInt(grindInput.value))); saveSettings(); };
+        card.append(chk, nameInput, grindInput);
+        cs.append(card);
+      });
+      const ms = document.getElementById('maintenanceSettingsList'); ms.innerHTML = '';
+      settings.maints.forEach(m => {
+        const card = document.createElement('div'); card.className = 'setting-card';
+        const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.value = m.name; nameInput.oninput = () => { m.name = nameInput.value; saveSettings(); };
+        const intervalInput = document.createElement('input'); intervalInput.type = 'number'; intervalInput.min = 1; intervalInput.value = m.interval; intervalInput.onchange = () => { m.interval = Math.max(1, parseInt(intervalInput.value)); m.remaining = m.interval; saveSettings(); };
+        card.append(nameInput, intervalInput);
+        ms.append(card);
+      });
     }
-    document.addEventListener('DOMContentLoaded',()=>{ const mainScreen=document.getElementById('mainScreen'); const settingsScreen=document.getElementById('settingsScreen'); document.getElementById('settingsBtn').onclick=()=>{ mainScreen.classList.remove('active'); settingsScreen.classList.add('active'); renderSettings(); }; document.getElementById('backBtn').onclick=()=>{ settingsScreen.classList.remove('active'); mainScreen.classList.add('active'); }; renderMain(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      const mainScreen = document.getElementById('mainScreen');
+      const settingsScreen = document.getElementById('settingsScreen');
+      document.getElementById('settingsBtn').onclick = () => { mainScreen.classList.remove('active'); settingsScreen.classList.add('active'); renderSettings(); };
+      document.getElementById('backBtn').onclick = () => { settingsScreen.classList.remove('active'); mainScreen.classList.add('active'); };
+      renderMain();
+    });
   </script>
 </body>
 </html>
