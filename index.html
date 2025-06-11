@@ -81,26 +81,23 @@
     function saveSettings(){ localStorage.setItem(storageKey, JSON.stringify(settings)); renderMain(); }
     function renderMain(){
       const sel = document.getElementById('selectedCoffees'); sel.innerHTML = '';
-      settings.coffees.filter(c=>c.selected).slice(0, settings.chooseLimit).forEach(c => {
+      settings.coffees.filter(c => c.selected).slice(0, settings.chooseLimit).forEach(c => {
         const card = document.createElement('div'); card.className = 'coffee-card';
-        const left = document.createElement('div'); left.style.display = 'flex'; left.style.alignItems = 'center';
         const nameSpan = document.createElement('span'); nameSpan.className = 'coffee-name'; nameSpan.textContent = c.name;
         const desc = document.createTextNode(`: Mahlgrad ${c.grind}`);
-        left.append(nameSpan, desc);
-        const btn = document.createElement('button'); btn.textContent = 'Info'; // placeholder or remove if unneeded
-        card.append(left, btn);
+        card.append(nameSpan, desc);
         sel.append(card);
       });
       const ml = document.getElementById('maintList'); ml.innerHTML = '';
       settings.maints.forEach(m => {
         const card = document.createElement('div'); card.className = 'maint-card';
-        const left = document.createElement('div'); left.style.display = 'flex'; left.style.alignItems = 'center';
         const nameSpan = document.createElement('span'); nameSpan.className = 'maint-name'; nameSpan.textContent = m.name;
-        const daysSpan = document.createElement('span'); daysSpan.textContent = `: ${m.remaining} Tage`;
-        if(m.remaining <= 0) { daysSpan.className = 'warning'; }
-        left.append(nameSpan, daysSpan);
+        const daysText = `: ${m.remaining} Tage`;
+        const daysSpan = document.createElement('span'); daysSpan.textContent = daysText;
+        if(m.remaining <= 0) daysSpan.className = 'warning';
+        card.append(nameSpan, daysSpan);
         const btn = document.createElement('button'); btn.textContent = 'Reset'; btn.onclick = () => { m.remaining = m.interval; saveSettings(); };
-        card.append(left, btn);
+        card.append(btn);
         ml.append(card);
       });
     }
