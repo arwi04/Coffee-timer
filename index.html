@@ -20,12 +20,13 @@
     .panel { background: #E3F2FD; flex: 1; margin: 0.5rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
     .panel h2 { margin: 0; padding: 0.75rem; background: #007BFF; color: #fff; font-weight: 600; text-align: center; }
     .panel-content { flex: 1; padding: 0.5rem; display: flex; flex-direction: column; overflow-y: auto; }
-    .coffee-card { background: #FFFDE7; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; align-items: center; justify-content: flex-start; }
-    .coffee-name { font-weight: bold; }
-    .coffee-desc { margin-left: 4px; }
-    .maint-card { background: #FFFDE7; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; align-items: center; justify-content: space-between; }
+    .coffee-card { background: #FFFDE7; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; justify-content: flex-start; }
+    .coffee-card .coffee-text { font-weight: normal; }
+    .coffee-card .coffee-text strong { font-weight: bold; }
+    .maint-card { background: #FFFDE7; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; }
     .maint-left { display: flex; align-items: center; }
-    .maint-name { font-weight: bold; }
+    .maint-left .maint-text { font-weight: normal; }
+    .maint-left .maint-text strong { font-weight: bold; }
     .warning { color: red; font-weight: bold; }
     .maint-card button { background: #FF8C00; border: none; border-radius: 6px; padding: 0.25rem 0.75rem; color: #fff; cursor: pointer; }
     /* Settings Screen: two columns */
@@ -79,27 +80,27 @@
       lastDate: today
     };
     let settings = JSON.parse(localStorage.getItem(storageKey)) || defaultSettings;
-    const prevDate = new Date(settings.lastDate), now = new Date();
-    const dayDiff = Math.floor((now - prevDate)/(1000*3600*24));
+    const prevDate = new Date(settings.lastDate), nowDate = new Date();
+    const dayDiff = Math.floor((nowDate - prevDate)/(1000*3600*24));
     if(dayDiff>0){ settings.maints.forEach(m=> m.remaining = Math.max(0, m.remaining-dayDiff)); settings.lastDate = today; saveSettings(); }
     function saveSettings(){ localStorage.setItem(storageKey, JSON.stringify(settings)); renderMain(); }
     function renderMain(){
       const sel = document.getElementById('selectedCoffees'); sel.innerHTML = '';
       settings.coffees.filter(c => c.selected).slice(0, settings.chooseLimit).forEach(c => {
         const card = document.createElement('div'); card.className = 'coffee-card';
-        const nameSpan = document.createElement('span'); nameSpan.className = 'coffee-name'; nameSpan.textContent = c.name;
-        const descSpan = document.createElement('span'); descSpan.className = 'coffee-desc'; descSpan.textContent = `: Mahlgrad ${c.grind}`;
-        card.append(nameSpan, descSpan);
+        const span = document.createElement('span'); span.className = 'coffee-text';
+        span.innerHTML = `<strong>${c.name}</strong>: Mahlgrad ${c.grind}`;
+        card.append(span);
         sel.append(card);
       });
       const ml = document.getElementById('maintList'); ml.innerHTML = '';
       settings.maints.forEach(m => {
         const card = document.createElement('div'); card.className = 'maint-card';
         const left = document.createElement('div'); left.className = 'maint-left';
-        const nameSpan = document.createElement('span'); nameSpan.className = 'maint-name'; nameSpan.textContent = m.name;
-        const daysSpan = document.createElement('span'); daysSpan.textContent = `: ${m.remaining} Tage`;
-        if(m.remaining <= 0) daysSpan.classList.add('warning');
-        left.append(nameSpan, daysSpan);
+        const span = document.createElement('span'); span.className = 'maint-text';
+        span.innerHTML = `<strong>${m.name}</strong>: ${m.remaining} Tage`;
+        if(m.remaining <= 0) span.classList.add('warning');
+        left.append(span);
         const btn = document.createElement('button'); btn.textContent = 'Reset'; btn.onclick = () => { m.remaining = m.interval; saveSettings(); };
         card.append(left, btn);
         ml.append(card);
