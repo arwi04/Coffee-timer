@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>CoffeeTimer PWA</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body { margin:0; font-family: sans-serif; background: #fafafa; color: #333; }
+    #app { display: flex; flex-direction: column; height: 100vh; }
+    header { background: #3b4252; color: #fff; padding: 0.75rem; text-align: center; font-size: 1.25rem; }
+    nav { display: flex; }
+    nav button { flex: 1; padding: 0.75rem; background: #5e81ac; color: #fff; border: none; cursor: pointer; }
+    nav button.active { background: #81a1c1; }
+    main { flex: 1; display: flex; overflow: auto; }
+    section { flex: 1; padding: 1rem; box-sizing: border-box; }
+    .card { background: #fff; border-radius: 6px; padding: 1rem; margin: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .horizontal { display: flex; gap: 0.5rem; }
+    .bean-name { font-weight: bold; margin-bottom: 0.25rem; }
+    .bean-grind { font-size: 0.9rem; color: #666; }
+    .timer-label { font-weight: bold; }
+    .timer-days { margin: 0.5rem 0; }
+    .btn { padding: 0.5rem 1rem; background: #5e81ac; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .settings input { width: 100%; padding: 0.5rem; margin: 0.25rem 0; border: 1px solid #ccc; border-radius: 4px; }
+    .settings-list { max-height: 50vh; overflow: auto; }
+    .settings-list div { margin: 0.25rem 0; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>CoffeeTimer</header>
+  <nav>
+    <button id="tab-home" class="active">Übersicht</button>
+    <button id="tab-settings">Einstellungen</button>
+  </nav>
+  <main>
+    <section id="home" class="horizontal">
+      <div style="flex:1;">
+        <h2>Bohnenprofile</h2>
+        <div id="bean-container" class="horizontal"></div>
+      </div>
+      <div style="flex:1;">
+        <h2>Wartung</h2>
+        <div id="timer-container"></div>
+      </div>
+    </section>
+    <section id="settings" style="display:none;">
+      <h2>Einstellungen</h2>
+      <div class="settings">
+        <h3>Wartungstexte</h3>
+        <div id="labels-settings"></div>
+        <h3>Bohnenprofile (slots 1–4 auswählen)</h3>
+        <div class="settings-list" id="beans-settings"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+  const allProfiles = JSON.parse(localStorage.getItem('allProfiles')) || [
+    {name:'Red Fruits',grind:'2.1',active:true},
+    {name:'Guatemala Natural',grind:'1.8',active:true},
+    {name:'Decaf',grind:'2.3',active:true},
+    {name:'Costa Rica Honey',grind:'1.9',active:true},
+    {name:'Ethiopia Washed',grind:'1.7',active:false},
+    {name:'Colombia EA',grind:'2.2',active:false},
+    {name:'Panama Geisha',grind:'1.6',active:false},
+    {name:'Kenya AB',grind:'2.0',active:false},
+    {name:'Brazil Natural',grind:'1.9',active:false},
+    {name:'Rwanda Bourbon',grind:'2.0',active:false},
+    {name:'Peru Organic',grind:'2.1',active:false},
+    {name:'Sumatra Lintong',grind:'2.4',active:false},
+    {name:'India Monsooned',grind:'2.5',active:false},
+    {name:'Tanzania Peaberry',grind:'2.0',active:false},
+    {name:'Mexico Altura',grind:'1.8',active:false},
+    {name:'Yemen Mocca',grind:'2.6',active:false},
+    {name:'Honduras Marcala',grind:'1.9',active:false},
+    {name:'Nicaragua Jinotega',grind:'2.1',active:false},
+    {name:'El Salvador Pacamara',grind:'2.2',active:false},
+    {name:'Laos Typica',grind:'2.3',active:false}
+  ];
+  const timerDefaults = [7,30,730];
+  const timers = JSON.parse(localStorage.getItem('timers'))||[...timerDefaults];
+  const timerLabels = JSON.parse(localStorage.getItem('timerLabels'))||[
+    'Rückspülung (wöchentlich)','Clean-Spülung (monatlich)','Wartung (zweijährlich)'
+  ];
+  function saveState(){
+    localStorage.setItem('allProfiles',JSON.stringify(allProfiles));
+    localStorage.setItem('timers',JSON.stringify(timers));
+    localStorage.setItem('timerLabels',JSON.stringify(timerLabels));
+  }
+  function renderHome(){
+    const bc=document.getElementById('bean-container'); bc.innerHTML='';
+    allProfiles.filter(p=>p.active).slice(0,4).forEach(p=>{
+      const c=document.createElement('div');c.className='card';
+      c.innerHTML=`<div class="bean-name">${p.name}</div><div class="bean-grind">${p.grind}</div>`;
+      bc.appendChild(c);
+    });
+    const tc=document.getElementById('timer-container'); tc.innerHTML='';
+    timers.forEach((d,i)=>{
+      const c=document.createElement('div');c.className='card';
+      c.innerHTML=`<div class="timer-label">${timerLabels[i]}</div><div class="timer-days">in ${d} Tagen</div><button class="btn" onclick="resetTimer(${i})">Reset</button>`;
+      tc.appendChild(c);
+    });
+  }
+  function renderSettings(){
+    const ls=document.getElementById('labels-settings'); ls.innerHTML='';
+    timerLabels.forEach((lbl,i)=>{
+      const inp=document.createElement('input'); inp.type='text'; inp.value=lbl;
+      inp.onchange=e=>{timerLabels[i]=e.target.value;saveState();renderHome();};
+      ls.appendChild(inp);
+    });
+    const bs=document.getElementById('beans-settings'); bs.innerHTML='';
+    allProfiles.forEach((p,i)=>{
+      const div=document.createElement('div');
+      const chk=document.createElement('input'); chk.type='checkbox'; chk.checked=p.active;
+      chk.onchange=()=>{
+        const act=allProfiles.filter(x=>x.active).length;
+        if(!p.active && act>=4) chk.checked=false;
+        else p.active=!p.active;
+        saveState(); renderHome(); renderSettings();
+      };
+      div.appendChild(chk);
+      const label=document.createElement('span'); label.textContent=` ${p.name} – ${p.grind}`;
+      div.appendChild(label);
+      bs.appendChild(div);
+    });
+    document.getElementById('beans-settings').scrollTop = 0;
+  }
+  function resetTimer(i){timers[i]=timerDefaults[i];saveState();renderHome();}
+  document.getElementById('tab-home').onclick=()=>{
+    document.getElementById('home').style.display='flex';
+    document.getElementById('settings').style.display='none';
+    document.getElementById('tab-home').classList.add('active');
+    document.getElementById('tab-settings').classList.remove('active');
+  };
+  document.getElementById('tab-settings').onclick=()=>{
+    document.getElementById('home').style.display='none';
+    document.getElementById('settings').style.display='block';
+    document.getElementById('tab-settings').classList.add('active');
+    document.getElementById('tab-home').classList.remove('active');
+  };
+  function dailyDecrement(){
+    timers.forEach((d,i)=>timers[i]=Math.max(d-1,0));
+    saveState();renderHome();
+  }
+  window.onload=()=>{
+    const last=localStorage.getItem('lastRun');
+    if(last){
+      const diff=(Date.now()-last)/(1000*60*60*24)|0;
+      if(diff>=1){ dailyDecrement(); localStorage.setItem('lastRun',Date.now()); }
+    } else localStorage.setItem('lastRun',Date.now());
+    renderHome(); renderSettings();
+  };
+</script>
+</body>
+</html>
