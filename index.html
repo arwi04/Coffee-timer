@@ -22,7 +22,6 @@
     .panel-content { flex: 1; padding: 0.5rem; display: flex; flex-direction: column; overflow-y: auto; }
     .coffee-card, .maint-card { background: #FFFDE7; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; }
     .coffee-name, .maint-name { font-weight: bold; }
-    .date-count { margin-left: 4px; }
     .warning { color: red; font-weight: bold; }
     .coffee-card button, .maint-card button { background: #FF8C00; border: none; border-radius: 6px; padding: 0.25rem 0.75rem; color: #fff; cursor: pointer; }
     /* Settings Screen: two columns */
@@ -84,19 +83,24 @@
       const sel = document.getElementById('selectedCoffees'); sel.innerHTML = '';
       settings.coffees.filter(c=>c.selected).slice(0, settings.chooseLimit).forEach(c => {
         const card = document.createElement('div'); card.className = 'coffee-card';
+        const left = document.createElement('div'); left.style.display = 'flex'; left.style.alignItems = 'center';
         const nameSpan = document.createElement('span'); nameSpan.className = 'coffee-name'; nameSpan.textContent = c.name;
         const desc = document.createTextNode(`: Mahlgrad ${c.grind}`);
-        card.append(nameSpan, desc);
+        left.append(nameSpan, desc);
+        const btn = document.createElement('button'); btn.textContent = 'Info'; // placeholder or remove if unneeded
+        card.append(left, btn);
         sel.append(card);
       });
       const ml = document.getElementById('maintList'); ml.innerHTML = '';
       settings.maints.forEach(m => {
         const card = document.createElement('div'); card.className = 'maint-card';
+        const left = document.createElement('div'); left.style.display = 'flex'; left.style.alignItems = 'center';
         const nameSpan = document.createElement('span'); nameSpan.className = 'maint-name'; nameSpan.textContent = m.name;
-        const daysSpan = document.createElement('span'); daysSpan.className = 'date-count'; daysSpan.textContent = ` ${m.remaining} Tage`;
-        if(m.remaining <= 0) daysSpan.classList.add('warning');
+        const daysSpan = document.createElement('span'); daysSpan.textContent = `: ${m.remaining} Tage`;
+        if(m.remaining <= 0) { daysSpan.className = 'warning'; }
+        left.append(nameSpan, daysSpan);
         const btn = document.createElement('button'); btn.textContent = 'Reset'; btn.onclick = () => { m.remaining = m.interval; saveSettings(); };
-        card.append(nameSpan, daysSpan, btn);
+        card.append(left, btn);
         ml.append(card);
       });
     }
