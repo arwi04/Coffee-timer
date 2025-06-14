@@ -15,7 +15,6 @@
       background: #f0f4f8;
       font-family: 'Poppins', sans-serif;
       color: #333;
-      /* Safe area bottom padding */
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
     header {
@@ -25,37 +24,16 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex: 0 0 auto;
     }
     header h1 { margin: 0; font-weight: 600; font-size: 1.2rem; }
-    #settingsBtn {
-      background: #FF8C00;
-      border: none;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      overflow: hidden;
-    }
-    #mainScreen, #settingsScreen {
-      flex: 1;
-      display: none;
-      overflow: hidden;
-    }
-    #mainScreen.active, #settingsScreen.active {
-      display: flex;
-    }
-    /* Panels */
+    #settingsBtn { background: #FF8C00; border: none; color: #fff; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    main { flex: 1; display: flex; flex-direction: row; overflow: hidden; }
+    #mainScreen, #settingsScreen { flex: 1; display: none; overflow: hidden; }
+    #mainScreen.active, #settingsScreen.active { display: flex; }
     .panel {
       background: #E3F2FD;
       flex: 1;
-      margin: 0.5rem;
+      margin: 0.25rem;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       display: flex;
@@ -72,51 +50,34 @@
     }
     .panel-content {
       flex: 1;
-      padding: 1rem 0.5rem 0.5rem;
+      padding: 1rem 0.5rem;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
     }
-    /* Coffee cards */
     .coffee-card {
       background: #FFFDE7;
       border-radius: 6px;
       padding: 0.5rem;
-      margin: 0.25rem 0;
+      margin: 0.125rem 0;
       display: flex;
       align-items: baseline;
     }
-    .coffee-card .coffee-text {
-      font-size: 0.95rem;
-    }
-    .coffee-card .coffee-text strong {
-      font-weight: bold;
-    }
-    /* Maintenance cards */
+    .coffee-card .coffee-text { font-size: 0.95rem; }
+    .coffee-card .coffee-text strong { font-weight: bold; }
     .maint-card {
       background: #FFFDE7;
       border-radius: 6px;
       padding: 0.5rem;
-      margin: 0.25rem 0;
+      margin: 0.125rem 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .maint-left {
-      display: flex;
-      align-items: baseline;
-    }
-    .maint-left .maint-text {
-      font-size: 0.95rem;
-    }
-    .maint-left .maint-text strong {
-      font-weight: bold;
-    }
-    .warning {
-      color: red;
-      font-weight: bold;
-      margin-left: 4px;
-    }
+    .maint-left { display: flex; align-items: baseline; }
+    .maint-left .maint-text { font-size: 0.95rem; }
+    .maint-left .maint-text strong { font-weight: bold; }
+    .warning { color: red; font-weight: bold; margin-left: 4px; }
     .maint-card button {
       background: #FF8C00;
       border: none;
@@ -126,7 +87,6 @@
       cursor: pointer;
       font-size: 0.9rem;
     }
-    /* Settings: two columns */
     #settingsScreen { flex-direction: row; }
     .settings-column {
       flex: 1;
@@ -146,11 +106,7 @@
       font-weight: 600;
       text-align: center;
     }
-    .settings-list {
-      flex: 1;
-      padding: 0.5rem;
-      overflow-y: auto;
-    }
+    .settings-list { flex: 1; padding: 0.5rem; overflow-y: auto; }
     .setting-card {
       background: #FFE0B2;
       border: 1px solid #ccc;
@@ -220,11 +176,25 @@
       lastDate: today
     };
     let settings = JSON.parse(localStorage.getItem(storageKey)) || defaultSettings;
-    const prevDate = new Date(settings.lastDate), nowDate = new Date();
-    const dayDiff = Math.floor((nowDate - prevDate)/(1000*3600*24));
-    if(dayDiff>0){ settings.maints.forEach(m=> m.remaining = Math.max(0, m.remaining-dayDiff)); settings.lastDate = today; saveSettings(); }
-    function saveSettings(){ localStorage.setItem(storageKey, JSON.stringify(settings)); renderMain(); }
-    function renderMain(){
+    // Ensure exactly four maintenance entries
+    if (!settings.maints || settings.maints.length !== MAINT_COUNT) {
+      settings.maints = defaultSettings.maints;
+      settings.lastDate = today;
+      localStorage.setItem(storageKey, JSON.stringify(settings));
+    }
+    const prev = new Date(settings.lastDate);
+    const now = new Date();
+    const diff = Math.floor((now - prev)/(1000*3600*24));
+    if (diff > 0) {
+      settings.maints.forEach(m => m.remaining = Math.max(0, m.remaining - diff));
+      settings.lastDate = today;
+      localStorage.setItem(storageKey, JSON.stringify(settings));
+    }
+    function saveSettings() {
+      localStorage.setItem(storageKey, JSON.stringify(settings));
+      renderMain();
+    }
+    function renderMain() {
       const sel = document.getElementById('selectedCoffees'); sel.innerHTML = '';
       settings.coffees.filter(c => c.selected).slice(0, settings.chooseLimit).forEach(c => {
         const card = document.createElement('div'); card.className = 'coffee-card';
@@ -239,14 +209,14 @@
         const left = document.createElement('div'); left.className = 'maint-left';
         const span = document.createElement('span'); span.className = 'maint-text';
         span.innerHTML = `<strong>${m.name}</strong>: ${m.remaining} Tage`;
-        if(m.remaining <= 0) span.classList.add('warning');
+        if (m.remaining <= 0) span.classList.add('warning');
         left.append(span);
         const btn = document.createElement('button'); btn.textContent = 'Reset'; btn.onclick = () => { m.remaining = m.interval; saveSettings(); };
         card.append(left, btn);
         ml.append(card);
       });
     }
-    function renderSettings(){
+    function renderSettings() {
       const cs = document.getElementById('coffeeSettingsList'); cs.innerHTML = '';
       settings.coffees.forEach(c => {
         const card = document.createElement('div'); card.className = 'setting-card';
