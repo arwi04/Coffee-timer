@@ -19,7 +19,17 @@
     .panel { background:#E3F2FD; flex:1; margin:0.25rem; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.05); display:flex; flex-direction:column; overflow:hidden; }
     .panel h2 { margin:0; padding:1rem; background:#007BFF; color:#fff; font-weight:600; text-align:center; }
     .panel-content { flex:1; padding:1rem 0.5rem; display:flex; flex-direction:column; overflow-y:auto; }
-    .coffee-card, .maint-card { background:#FFFDE7; border-radius:6px; padding:0.5rem; margin:0.125rem 0; display:flex; align-items:center; justify-content:space-between; }
+    .coffee-card, .maint-card {
+      background: #FFFDE7;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin: 0.125rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      /* gleiche Mindesthöhe */
+      min-height: 2.5rem;
+    }
     .coffee-card .coffee-text, .maint-left .maint-text { font-size:0.95rem; }
     .coffee-text strong, .maint-text strong { font-weight:bold; }
     .warning { color:red; font-weight:bold; margin-left:4px; }
@@ -73,7 +83,9 @@
       maints:Array.from({length:MAINT_COUNT},(_,i)=>({name:`Wartung ${i+1}`,interval:30,remaining:30})),
       lastDate:today
     };
-    let settings = JSON.parse(localStorage.getItem(storageKey))||defaultSettings;
+    let settings = JSON.parse(localStorage.getItem(storageKey)) || defaultSettings;
+    // Always ensure four maintenance entries (reset to default)
+    settings.maints = defaultSettings.maints;
     if(settings.maints.length<MAINT_COUNT){for(let i=settings.maints.length;i<MAINT_COUNT;i++){settings.maints.push({name:`Wartung ${i+1}`,interval:30,remaining:30});}settings.lastDate=today;localStorage.setItem(storageKey,JSON.stringify(settings));}
     const prev=new Date(settings.lastDate),now=new Date(),diff=Math.floor((now-prev)/(1000*3600*24));
     if(diff>0){settings.maints.forEach(m=>m.remaining=Math.max(0,m.remaining-diff));settings.lastDate=today;localStorage.setItem(storageKey,JSON.stringify(settings));}
