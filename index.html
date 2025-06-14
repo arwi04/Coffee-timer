@@ -176,9 +176,11 @@
       lastDate: today
     };
     let settings = JSON.parse(localStorage.getItem(storageKey)) || defaultSettings;
-    // Ensure exactly four maintenance entries
-    if (!settings.maints || settings.maints.length !== MAINT_COUNT) {
-      settings.maints = defaultSettings.maints;
+    // Ensure exactly four maintenance entries, fill missing
+    if (settings.maints.length < MAINT_COUNT) {
+      for (let i = settings.maints.length; i < MAINT_COUNT; i++) {
+        settings.maints.push({ name: `Wartung ${i+1}`, interval: 30, remaining: 30 });
+      }
       settings.lastDate = today;
       localStorage.setItem(storageKey, JSON.stringify(settings));
     }
@@ -199,7 +201,7 @@
       settings.coffees.filter(c => c.selected).slice(0, settings.chooseLimit).forEach(c => {
         const card = document.createElement('div'); card.className = 'coffee-card';
         const span = document.createElement('span'); span.className = 'coffee-text';
-        span.innerHTML = `<strong>${c.name}</strong>: Mahlgrad ${c.grind}`;
+        span.innerHTML = `<strong>${c.name}</strong>: Mahlgrad <strong>${c.grind}</strong>`;
         card.append(span);
         sel.append(card);
       });
@@ -208,7 +210,7 @@
         const card = document.createElement('div'); card.className = 'maint-card';
         const left = document.createElement('div'); left.className = 'maint-left';
         const span = document.createElement('span'); span.className = 'maint-text';
-        span.innerHTML = `<strong>${m.name}</strong>: ${m.remaining} Tage`;
+        span.innerHTML = `<strong>${m.name}</strong>: <strong>${m.remaining}</strong> Tage`;
         if (m.remaining <= 0) span.classList.add('warning');
         left.append(span);
         const btn = document.createElement('button'); btn.textContent = 'Reset'; btn.onclick = () => { m.remaining = m.interval; saveSettings(); };
