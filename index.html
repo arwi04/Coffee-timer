@@ -60,12 +60,14 @@
     .coffee-card, .maint-card {
       background: #FFFDE7;
       border-radius: 6px;
-      padding: 0.5rem;
+      /* geringeres Padding für weniger Höhe */
+      padding: 0.3rem  /* vorher 0.5rem */;
       margin: 0.125rem 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 2.5rem;
+      /* reduzierte Mindesthöhe */
+      min-height: 2rem; /* vorher 2.5rem */
     }
     .coffee-text, .maint-text { font-size: 0.95rem; }
     .coffee-text strong, .maint-text strong { font-weight: bold; }
