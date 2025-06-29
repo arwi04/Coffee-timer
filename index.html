@@ -5,33 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
   <title>CoffeeTimer PWA</title>
   <link rel="manifest" href="manifest.json">
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    html, body { margin:0; padding:0; height:100vh; display:flex; flex-direction:column; background:#f0f4f8; font-family:'Poppins',sans-serif; }
-    header { background:#007BFF; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; align-items:center; }
-    header h1 { margin:0; font-size:1.2rem; font-weight:600; }
-    button { background:#FF8C00; border:none; color:#fff; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; font-weight:600; }
-    #backHeaderBtn { display:none; }
-    main { flex:1; display:flex; }
-    #mainScreen, #settingsScreen { flex:1; display:none; }
-    #mainScreen.active, #settingsScreen.active { display:flex; }
-    .panel { background:#E3F2FD; flex:1; margin:0.5rem; border-radius:10px; display:flex; flex-direction:column; }
-    .panel h2 { margin:0; padding:0.5rem; background:#007BFF; color:#fff; text-align:center; font-weight:600; }
-    .panel-content { flex:1; overflow-y:auto; padding:0.5rem; }
-    .coffee-card, .maint-card { background:#FFFDE7; margin:0.25rem 0; padding:0.5rem; border-radius:6px; display:flex; justify-content:space-between; align-items:center; }
+    /* Global Styles */
+    html, body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; background: #f0f4f8; font-family: 'Poppins', sans-serif; }
+    header { background: #007BFF; color: #fff; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+    button { background: #FF8C00; border: none; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    #backHeaderBtn { display: none; }
+
+    /* Layout */
+    main { flex: 1; display: flex; overflow: hidden; }
+    #mainScreen, #settingsScreen { flex: 1; display: none; }
+    #mainScreen.active, #settingsScreen.active { display: flex; }
+
+    /* Panels */
+    .panel { background: #E3F2FD; flex: 1; margin: 0.5rem; border-radius: 10px; display: flex; flex-direction: column; }
+    .panel h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; text-align: center; font-weight: 600; }
+    .panel-content { flex: 1; overflow-y: auto; padding: 0.5rem; }
+
+    /* Cards */
+    .coffee-card, .maint-card { background: #FFFDE7; margin: 0.25rem 0; padding: 0.5rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+
     /* Settings */
-    .settings-column { flex:1; display:flex; flex-direction:column; margin:0.5rem; background:#FFF3E0; border-radius:10px; }
-    .settings-column h2 { margin:0; padding:0.5rem; background:#007BFF; color:#fff; text-align:center; font-weight:600; }
-    .settings-list { flex:1; overflow-y:auto; padding:0.5rem; }
-    .settings-header { display:flex; font-weight:600; padding:0.5rem; }
-    .settings-header span { flex:1; text-align:center; }
-    .settings-header .col-name { text-align:left; }
-    .settings-header .col-grind, .settings-header .col-key { text-align:center; }
-    .settings-header .col-interval { text-align:center; }
-    .setting-card { display:flex; align-items:center; background:#FFE0B2; padding:0.5rem; margin:0.25rem 0; border-radius:6px; }
-    .setting-card input[type=checkbox] { margin-right:0.5rem; }
-    .setting-card input[type=text] { flex:2; margin-left:0.5rem; padding:0.4rem; border:1px solid #ccc; border-radius:6px; }
-    .setting-card input[type=number], .setting-card select { flex:1; margin-left:0.5rem; padding:0.4rem; border:1px solid #ccc; border-radius:6px; max-width:4rem; }
+    .settings-column { flex: 1; display: flex; flex-direction: column; margin: 0.5rem; background: #FFF3E0; border-radius: 10px; }
+    .settings-column h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; text-align: center; font-weight: 600; }
+    .settings-list { flex: 1; overflow-y: auto; padding: 0.5rem; }
+
+    /* Header Row in Settings */
+    .settings-header { display: flex; font-weight: 600; padding: 0.5rem; }
+    .settings-header span { flex: 1; text-align: center; }
+    .settings-header .col-name { text-align: left; }
+    .settings-header .col-grind, .settings-header .col-key, .settings-header .col-interval { text-align: center; }
+
+    /* Setting Cards */
+    .setting-card { display: flex; align-items: center; background: #FFE0B2; padding: 0.5rem; margin: 0.25rem 0; border-radius: 6px; }
+    .setting-card input[type=checkbox] { margin-right: 0.5rem; }
+    .setting-card input[type=text] { flex: 2; margin-left: 0.5rem; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; }
+    .setting-card input[type=number], .setting-card select { flex: 1; margin-left: 0.5rem; padding: 0.4rem; border: 1px solid #ccc; border-radius: 6px; max-width: 4rem; }
   </style>
 </head>
 <body>
@@ -41,6 +53,7 @@
     <button id="settingsBtn">Einstellungen</button>
   </header>
   <main>
+    <!-- Main Screen -->
     <div id="mainScreen" class="active">
       <div class="panel">
         <h2>Kaffeesorten</h2>
@@ -51,71 +64,112 @@
         <div class="panel-content" id="maintList"></div>
       </div>
     </div>
+
+    <!-- Settings Screen -->
     <div id="settingsScreen">
       <div class="settings-column">
         <h2>Kaffee Einstellungen</h2>
         <div class="settings-header">
-          <span></span><span class="col-name">Kaffee</span><span class="col-grind">Mahlgrad</span><span class="col-key">Taste</span>
+          <span></span>
+          <span class="col-name">Kaffee</span>
+          <span class="col-grind">Mahlgrad</span>
+          <span class="col-key">Taste</span>
         </div>
         <div class="settings-list" id="coffeeSettingsList"></div>
       </div>
       <div class="settings-column">
         <h2>Wartungs Einstellungen</h2>
         <div class="settings-header">
-          <span></span><span class="col-name">Wartungstext</span><span class="col-interval">Intervall (Tage)</span><span></span>
+          <span></span>
+          <span class="col-name">Wartungstext</span>
+          <span class="col-interval">Intervall</span>
+          <span></span>
         </div>
         <div class="settings-list" id="maintenanceSettingsList"></div>
       </div>
     </div>
   </main>
   <script>
-    const COFFEE_COUNT=20, MAINT_COUNT=4, KEY_LIMIT=4;
-    const storageKey='coffeeSettings';
-    const defaultSettings={
-      coffees:Array.from({length:COFFEE_COUNT},(_,i)=>({name:`Kaffee ${i+1}`,grind:25,selected:false,key:1})),
-      maints:Array.from({length:MAINT_COUNT},(_,i)=>({name:`Wartung ${i+1}`,interval:30,remaining:30}))
+    const COFFEE_COUNT = 20;
+    const MAINT_COUNT = 4;
+    const KEY_LIMIT = 4;
+    const storageKey = 'coffeeSettings';
+    const defaultSettings = {
+      coffees: Array.from({ length: COFFEE_COUNT }, (_, i) => ({ name: `Kaffee ${i+1}`, grind: 25, selected: false, key: 1 })),
+      maints: Array.from({ length: MAINT_COUNT }, (_, i) => ({ name: `Wartung ${i+1}`, interval: 30, remaining: 30 }))
     };
-    let settings=JSON.parse(localStorage.getItem(storageKey))||defaultSettings;
-    function save(){localStorage.setItem(storageKey,JSON.stringify(settings));}
-    function showMain(){document.getElementById('mainScreen').classList.add('active');document.getElementById('settingsScreen').classList.remove('active');document.getElementById('settingsBtn').style.display='block';document.getElementById('backHeaderBtn').style.display='none';renderMain();}
-    function showSettings(){document.getElementById('settingsScreen').classList.add('active');document.getElementById('mainScreen').classList.remove('active');document.getElementById('settingsBtn').style.display='none';document.getElementById('backHeaderBtn').style.display='block';renderSettings();}
-    document.getElementById('settingsBtn').onclick=showSettings;
-    document.getElementById('backHeaderBtn').onclick=showMain;
-    function renderMain(){
-      const sel=document.getElementById('selectedCoffees');sel.innerHTML='';
-      settings.coffees.filter(c=>c.selected).slice(0,KEY_LIMIT).forEach(c=>{
-        const d=document.createElement('div');d.className='coffee-card';
-        d.innerHTML=`<span><strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key}</strong></span>`;
+    let settings = JSON.parse(localStorage.getItem(storageKey)) || defaultSettings;
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(settings));
+    }
+
+    function showMain() {
+      document.getElementById('mainScreen').classList.add('active');
+      document.getElementById('settingsScreen').classList.remove('active');
+      document.getElementById('settingsBtn').style.display = 'block';
+      document.getElementById('backHeaderBtn').style.display = 'none';
+      renderMain();
+    }
+
+    function showSettings() {
+      document.getElementById('settingsScreen').classList.add('active');
+      document.getElementById('mainScreen').classList.remove('active');
+      document.getElementById('settingsBtn').style.display = 'none';
+      document.getElementById('backHeaderBtn').style.display = 'block';
+      renderSettings();
+    }
+
+    document.getElementById('settingsBtn').onclick = showSettings;
+    document.getElementById('backHeaderBtn').onclick = showMain;
+
+    function renderMain() {
+      const sel = document.getElementById('selectedCoffees');
+      sel.innerHTML = '';
+      settings.coffees.filter(c => c.selected).slice(0, KEY_LIMIT).forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'coffee-card';
+        d.innerHTML = `<span><strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key}</strong></span>`;
         sel.append(d);
       });
-      const ml=document.getElementById('maintList');ml.innerHTML='';
-      settings.maints.forEach(m=>{
-        const d=document.createElement('div');d.className='maint-card';
-        d.innerHTML=`<span><strong>${m.name}</strong>: ${m.remaining} Tage</span><button onclick='m.remaining=m.interval;save();renderMain();'>Reset</button>`;
+
+      const ml = document.getElementById('maintList');
+      ml.innerHTML = '';
+      settings.maints.forEach(m => {
+        const d = document.createElement('div');
+        d.className = 'maint-card';
+        d.innerHTML = `<span><strong>${m.name}</strong>: ${m.remaining} Tage</span><button onclick='m.remaining=m.interval; save(); renderMain();'>Reset</button>`;
         ml.append(d);
       });
     }
-    function renderSettings(){
-      const cl=document.getElementById('coffeeSettingsList');cl.innerHTML='';
-      settings.coffees.forEach((c,i)=>{
-        const d=document.createElement('div');d.className='setting-card';
-        d.innerHTML=
-          `<input type='checkbox' ${c.selected?'checked':''} onchange='settings.coffees[${i}].selected=this.checked;save();'>`+
-          `<input type='text' value='${c.name}' onchange='settings.coffees[${i}].name=this.value;save();'>`+
-          `<input type='number' min='10' max='40' value='${c.grind}' onchange='settings.coffees[${i}].grind=parseInt(this.value);save();'>`+
-          `<select onchange='settings.coffees[${i}].key=parseInt(this.value);save();'>${[1,2,3].map(n=>`<option value='${n}'${c.key===n?' selected':''}>${n}</option>`).join('')}</select>`;
+
+    function renderSettings() {
+      const cl = document.getElementById('coffeeSettingsList');
+      cl.innerHTML = '';
+      settings.coffees.forEach((c, i) => {
+        const d = document.createElement('div');
+        d.className = 'setting-card';
+        d.innerHTML =
+          `<input type='checkbox' ${c.selected ? 'checked' : ''} onchange='settings.coffees[${i}].selected=this.checked; save();'>` +
+          `<input type='text' value='${c.name}' onchange='settings.coffees[${i}].name=this.value; save();'>` +
+          `<input type='number' min='10' max='40' value='${c.grind}' onchange='settings.coffees[${i}].grind=parseInt(this.value); save();'>` +
+          `<select onchange='settings.coffees[${i}].key=parseInt(this.value); save();'>${[1, 2, 3].map(n => `<option value='${n}'${c.key === n ? ' selected' : ''}>${n}</option>`).join('')}</select>`;
         cl.append(d);
       });
-      const ml=document.getElementById('maintenanceSettingsList');ml.innerHTML='';
-      settings.maints.forEach((m,i)=>{
-        const d=document.createElement('div');d.className='setting-card';
-        d.innerHTML=
-          `<input type='text' value='${m.name}' onchange='settings.maints[${i}].name=this.value;save();'>`+
-          `<input type='number' min='1' value='${m.interval}' onchange='settings.maints[${i}].interval=parseInt(this.value);m.remaining=m.interval;save();'>`;
+
+      const ml = document.getElementById('maintenanceSettingsList');
+      ml.innerHTML = '';
+      settings.maints.forEach((m, i) => {
+        const d = document.createElement('div');
+        d.className = 'setting-card';
+        d.innerHTML =
+          `<input type='text' value='${m.name}' onchange='settings.maints[${i}].name=this.value; save();'>` +
+          `<input type='number' min='1' value='${m.interval}' onchange='settings.maints[${i}].interval=parseInt(this.value); m.remaining=m.interval; save();'>`;
         ml.append(d);
       });
     }
-    document.addEventListener('DOMContentLoaded',showMain);
+
+    document.addEventListener('DOMContentLoaded', showMain);
   </script>
 </body>
 </html>
