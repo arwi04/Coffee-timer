@@ -32,7 +32,19 @@
     .settings-column h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; text-align: center; font-weight: 600; }
 
     /* SETTINGS HEADERS ALIGNMENT */
-    .settings-header { display: flex; font-weight: 600; padding: 0.25rem 0; }
+    .settings-header {
+      display: flex;
+      font-weight: 600;
+      padding: 0.25rem 0;
+    }
+    /* Remove default padding, align with input fields */
+    .settings-header span { flex: 1; padding-left: 0; }
+    /* Offset for first column (after checkbox) */
+    .settings-header .col-name { flex: 2; margin-left: 1.5rem; }
+    /* Offset for second column (text inputs have margin-left) */
+    .settings-header .col-grind, .settings-header .col-key, .settings-header .col-interval {
+      flex: 1; text-align: center; margin-left: 0.5rem;
+    }
     .settings-header span { flex: 1; padding-left: 0.5rem; }
     .settings-header .col-name { flex: 2; }
     .settings-header .col-grind,
