@@ -28,7 +28,10 @@
     .settings-list { flex: 1; padding: 0.5rem; overflow-y: auto; }
     .setting-card { background: #FFE0B2; padding: 0.5rem; margin: 0.25rem 0; border-radius: 8px; display: flex; align-items: center; }
     .setting-card input[type="checkbox"] { margin-right: 0.5rem; }
-    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; }
+    /* Wartungstext breiter, Tage-Feld schmaler */
+    .setting-card input[type="text"] { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; flex: 1; }
+    .setting-card input[type="number"] { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; width: 3rem; }
+    .setting-card select { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; width: 3rem; }
   </style>
 </head>
 <body>
