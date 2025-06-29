@@ -33,11 +33,17 @@
 
         /* SETTINGS HEADERS ALIGNMENT */
     .settings-header {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      column-gap: 0.5rem;
       font-weight: 600;
       padding: 0.25rem 0.5rem;
     }
+    .settings-header .col-spacer { display: none; }
+    .settings-header .col-name { text-align: left; }
+    .settings-header .col-grind,
+    .settings-header .col-key,
+    .settings-header .col-interval { text-align: center; }
     /* Spacer for the checkbox column */
     .settings-header .col-spacer {
       flex: 0 0 1.5rem; /* width matching checkbox + margin */
@@ -50,7 +56,20 @@
       text-align: center;
     }
 
-    .setting-card { background: #FFE0B2; padding: 0.5rem; margin: 0.25rem 0; border-radius: 8px; display: flex; align-items: center; } { background: #FFE0B2; padding: 0.5rem; margin: 0.25rem 0; border-radius: 8px; display: flex; align-items: center; }
+    .setting-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      column-gap: 0.5rem;
+      background: #FFE0B2;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      border-radius: 8px;
+      align-items: center;
+    }
+    .setting-card input[type="checkbox"] { margin: 0; }
+    .setting-card input[type="text"] { margin: 0; }
+    .setting-card input[type="number"],
+    .setting-card select { margin: 0; max-width: 3rem; } { background: #FFE0B2; padding: 0.5rem; margin: 0.25rem 0; border-radius: 8px; display: flex; align-items: center; }
     .setting-card input[type="checkbox"] { margin-right: 0.5rem; }
     .setting-card input[type="text"] { flex: 2; margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; }
     .setting-card input[type="number"],
