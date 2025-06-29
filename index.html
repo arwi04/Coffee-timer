@@ -13,7 +13,7 @@
     header h1 { margin: 0; font-weight: 600; font-size: 1.1rem; }
     #settingsBtn, #backHeaderBtn { background: #FF8C00; border: none; color: #fff; padding: 0.4rem 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
     #backHeaderBtn { display: none; }
-    main { flex: 1; display: flex; flex-direction: row; overflow: hidden; }
+    main { flex: 1; display: flex; flex-direction: row; }
     #mainScreen, #settingsScreen { flex: 1; display: none; overflow: hidden; }
     #mainScreen.active, #settingsScreen.active { display: flex; }
     .panel { background: #E3F2FD; flex: 1; margin: 0.25rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
@@ -23,23 +23,13 @@
     .coffee-text, .maint-text { font-size: 0.95rem; }
     .coffee-text strong, .maint-text strong { font-weight: bold; }
     .warning { color: red; font-weight: bold; margin-left: 4px; }
-    .maint-left { display: flex; align-items: baseline; }
-    .maint-card button { background: #FF8C00; border: none; border-radius: 6px; padding: 0.25rem 0.75rem; color: #fff; cursor: pointer; font-size: 0.9rem; }
     #settingsScreen { flex-direction: row; }
-    .settings-column { flex: 1; display: flex; flex-direction: column; margin: 0.5rem; background: #FFF3E0; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); overflow: hidden; }
+    .settings-column { flex: 1; display: flex; flex-direction: column; margin: 0.5rem; background: #FFF3E0; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
     .settings-column h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; font-weight: 600; text-align: center; font-size: 1rem; }
     .settings-list { flex: 1; padding: 0.5rem; overflow-y: auto; }
     .setting-card { background: #FFE0B2; border: 1px solid #ccc; border-radius: 8px; padding: 0.75rem; margin: 0.25rem 0; display: flex; align-items: center; }
     .setting-card input[type="checkbox"] { margin-right: 0.5rem; }
-    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select {
-      margin-left: 0.5rem;
-      padding: 0.4rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 0.9rem;
-      /* Einheitliche schmale Breite für Number- und Select-Felder */
-      width: 4rem;
-    }
+    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; width:4rem; }
   </style>
 </head>
 <body>
@@ -71,103 +61,26 @@
     </div>
   </main>
   <script>
-    const COFFEE_COUNT = 20;
-    const MAINT_COUNT = 4;
-    const storageKey = 'coffeeSettings';
+    const COFFEE_COUNT = 20, MAINT_COUNT = 4, storageKey = 'coffeeSettings';
     const today = new Date().toDateString();
     const defaultSettings = {
-      coffees: Array.from({length: COFFEE_COUNT}, (_,i) => ({name: `Kaffee ${i+1}`, grind: 25, selected: false, key: 1})),
-      chooseLimit: 4,
-      maints: Array.from({length: MAINT_COUNT}, (_,i) => ({name: `Wartung ${i+1}`, interval: 30, remaining: 30})),
+      coffees: Array.from({length:COFFEE_COUNT}, (_,i)=>( {name:`Kaffee ${i+1}`, grind:25, selected:false, key:1} )),
+      chooseLimit:4,
+      maints: Array.from({length:MAINT_COUNT}, (_,i)=>( {name:`Wartung ${i+1}`, interval:30, remaining:30} )),
       lastDate: today
     };
     let settings = JSON.parse(localStorage.getItem(storageKey)) || defaultSettings;
-    // Ensure data structure
-    if (!settings.coffees.every(c => 'key' in c)) {
-      settings.coffees.forEach(c => c.key = c.key || 1);
-    }
-    if (settings.maints.length < MAINT_COUNT) {
-      for (let i = settings.maints.length; i < MAINT_COUNT; i++) {
-        settings.maints.push({ name: `Wartung ${i+1}`, interval: 30, remaining: 30 });
-      }
-      settings.lastDate = today;
-    }
-    
-    // Check and update daily countdown on load and resume
-    function checkDailyUpdate() {
-      const todayStr = new Date().toDateString();
-      const prevDate = new Date(settings.lastDate);
-      const diff = Math.floor((new Date(todayStr) - prevDate) / (1000 * 3600 * 24));
-      if (diff > 0) {
-        settings.maints.forEach(m => m.remaining = Math.max(0, m.remaining - diff));
-        settings.lastDate = todayStr;
-        saveSettings();
-      }
-    }
-    
-    // Schedule next midnight update
-    function updateAtMidnight() {
-      const now = new Date();
-      const nextMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5);
-      setTimeout(() => {
-        settings.maints.forEach(m => m.remaining = Math.max(0, m.remaining - 1));
-        settings.lastDate = new Date().toDateString();
-        saveAndRender();
-        updateAtMidnight();
-      }, nextMid - now);
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      checkDailyUpdate();
-      renderMain();
-      updateAtMidnight();
-    });
-    
-    // Also check when app becomes visible (e.g., resumed)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        checkDailyUpdate();
-        renderMain();
-      }
-    }); };
-        card.append(left, btn);
-        ml.append(card);
-      });
-    }
-    // Render Settings Screen
-    function renderSettings() {
-      document.getElementById('settingsScreen').classList.add('active');
-      document.getElementById('mainScreen').classList.remove('active');
-      settingsBtn.style.display = 'none'; backHeaderBtn.style.display = 'block';
-      const cs = document.getElementById('coffeeSettingsList'); cs.innerHTML = '';
-      settings.coffees.forEach(c => {
-        const card = document.createElement('div'); card.className = 'setting-card';
-        const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = c.selected;
-        chk.onchange = () => { c.selected = chk.checked; saveSettings(); };
-        const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.value = c.name;
-        nameInput.oninput = () => { c.name = nameInput.value; saveSettings(); };
-        const grindInput = document.createElement('input'); grindInput.type = 'number'; grindInput.min = 10; grindInput.max = 40; grindInput.step = 1; grindInput.value = c.grind;
-        grindInput.onchange = () => { c.grind = Math.min(40, Math.max(10, parseInt(grindInput.value))); saveSettings(); };
-        const select = document.createElement('select');
-        [1,2,3].forEach(n => { const opt = document.createElement('option'); opt.value = n; opt.text = n; if (c.key === n) opt.selected = true; select.append(opt); });
-        select.onchange = () => { c.key = parseInt(select.value); saveSettings(); };
-        card.append(chk, nameInput, grindInput, select);
-        cs.append(card);
-      });
-      const ms = document.getElementById('maintenanceSettingsList'); ms.innerHTML = '';
-      settings.maints.forEach(m => {
-        const card = document.createElement('div'); card.className = 'setting-card';
-        const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.value = m.name;
-        nameInput.oninput = () => { m.name = nameInput.value; saveSettings(); };
-        const intervalInput = document.createElement('input'); intervalInput.type = 'number'; intervalInput.min = 1; intervalInput.value = m.interval;
-        intervalInput.onchange = () => { m.interval = Math.max(1, parseInt(intervalInput.value)); m.remaining = m.interval; saveSettings(); };
-        card.append(nameInput, intervalInput);
-        ms.append(card);
-      });
-    }
-    settingsBtn.onclick = renderSettings;
-    backHeaderBtn.onclick = () => { saveSettings(); renderMain(); };
-    document.addEventListener('DOMContentLoaded', () => { renderMain(); updateAtMidnight(); });
+    // ensure structure
+    settings.coffees.forEach(c=>{ if(!('key' in c)) c.key=1; });
+    if(settings.maints.length<MAINT_COUNT){ for(let i=settings.maints.length;i<MAINT_COUNT;i++){ settings.maints.push({name:`Wartung ${i+1}`, interval:30, remaining:30}); } settings.lastDate=today; }
+    function saveSettings(){ localStorage.setItem(storageKey, JSON.stringify(settings)); }
+    function saveAndRender(){ saveSettings(); renderMain(); }
+    function checkDailyUpdate(){ const nowStr=new Date().toDateString(), prev=new Date(settings.lastDate); const diff=Math.floor((new Date(nowStr)-prev)/(1000*3600*24)); if(diff>0){ settings.maints.forEach(m=>m.remaining=Math.max(0,m.remaining-diff)); settings.lastDate=nowStr; saveSettings(); } }
+    function updateAtMidnight(){ const now=new Date(); const nextMid=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,5); setTimeout(()=>{ settings.maints.forEach(m=>m.remaining=Math.max(0,m.remaining-1)); settings.lastDate=new Date().toDateString(); saveAndRender(); updateAtMidnight(); }, nextMid-now); }
+    function renderMain(){ document.getElementById('mainScreen').classList.add('active'); document.getElementById('settingsScreen').classList.remove('active'); settingsBtn.style.display='block'; backHeaderBtn.style.display='none'; const sel=document.getElementById('selectedCoffees'); sel.innerHTML=''; settings.coffees.filter(c=>c.selected).slice(0,settings.chooseLimit).forEach(c=>{ const card=document.createElement('div'); card.className='coffee-card'; const span=document.createElement('span'); span.className='coffee-text'; span.innerHTML=`<strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key}</strong>`; card.append(span); sel.append(card); }); const ml=document.getElementById('maintList'); ml.innerHTML=''; settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='maint-card'; const span=document.createElement('span'); span.className='maint-text'; span.innerHTML=`<strong>${m.name}</strong>: <strong>${m.remaining}</strong> Tage`; if(m.remaining<=0) span.classList.add('warning'); const btn=document.createElement('button'); btn.textContent='Reset'; btn.onclick=()=>{ m.remaining=m.interval; saveAndRender(); }; card.append(span,btn); ml.append(card); }); }
+    function renderSettings(){ document.getElementById('settingsScreen').classList.add('active'); document.getElementById('mainScreen').classList.remove('active'); settingsBtn.style.display='none'; backHeaderBtn.style.display='block'; const cs=document.getElementById('coffeeSettingsList'); cs.innerHTML=''; settings.coffees.forEach(c=>{ const card=document.createElement('div'); card.className='setting-card'; const chk=document.createElement('input'); chk.type='checkbox'; chk.checked=c.selected; chk.onchange=()=>{ c.selected=chk.checked; saveSettings(); }; const ni=document.createElement('input'); ni.type='text'; ni.value=c.name; ni.oninput=()=>{ c.name=ni.value; saveSettings(); }; const gi=document.createElement('input'); gi.type='number'; gi.min=10; gi.max=40; gi.step=1; gi.value=c.grind; gi.onchange=()=>{ c.grind=Math.min(40,Math.max(10,parseInt(gi.value))); saveSettings(); }; const sl=document.createElement('select'); [1,2,3].forEach(n=>{ const opt=document.createElement('option'); opt.value=n; opt.text=n; if(c.key===n) opt.selected=true; sl.append(opt); }); sl.onchange=()=>{ c.key=parseInt(sl.value); saveSettings(); }; card.append(chk,ni,gi,sl); cs.append(card); }); const ms=document.getElementById('maintenanceSettingsList'); ms.innerHTML=''; settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='setting-card'; const ni=document.createElement('input'); ni.type='text'; ni.value=m.name; ni.oninput=()=>{ m.name=ni.value; saveSettings(); }; const ii=document.createElement('input'); ii.type='number'; ii.min=1; ii.value=m.interval; ii.onchange=()=>{ m.interval=Math.max(1,parseInt(ii.value)); m.remaining=m.interval; saveSettings(); }; card.append(ni,ii); ms.append(card); }); }
+    const settingsBtn=document.getElementById('settingsBtn'), backHeaderBtn=document.getElementById('backHeaderBtn'); settingsBtn.onclick=renderSettings; backHeaderBtn.onclick=()=>{ saveSettings(); renderMain(); };
+    document.addEventListener('DOMContentLoaded', ()=>{ checkDailyUpdate(); renderMain(); updateAtMidnight(); }); document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ checkDailyUpdate(); renderMain(); }});
   </script>
 </body>
 </html>
