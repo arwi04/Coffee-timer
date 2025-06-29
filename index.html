@@ -20,8 +20,8 @@
     .panel h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; text-align: center; font-weight: 600; }
     .panel-content { flex: 1; padding: 0.5rem; overflow-y: auto; }
     .coffee-card, .maint-card { background: #FFFDE7; margin: 0.25rem 0; padding: 0.5rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-    .coffee-card span, .maint-card span { font-size: 0.95rem; }
-    .coffee-card span strong, .maint-card span strong { font-weight: bold; }
+    .coffee-text, .maint-text { font-size: 0.95rem; }
+    .coffee-text strong, .maint-text strong { font-weight: bold; }
     .warning { color: red; font-weight: bold; }
     .settings-column { flex: 1; display: flex; flex-direction: column; margin: 0.5rem; background: #FFF3E0; border-radius: 12px; }
     .settings-column h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; text-align: center; font-weight: 600; }
@@ -63,36 +63,13 @@
     const COFFEE_COUNT = 20;
     const MAINT_COUNT = 4;
     const storageKey = 'coffeeSettings';
-    const today = new Date().toDateString();
-    const defaultSettings = {
-      coffees: Array.from({length:COFFEE_COUNT},(_,i)=>({name:`Kaffee ${i+1}`, grind:25, selected:false, key:1})),
-      chooseLimit:4,
-      maints: Array.from({length:MAINT_COUNT},(_,i)=>({name:`Wartung ${i+1}`, interval:30, remaining:30})),
-      lastDate:today
-    };
+    const defaultSettings = { coffees: Array.from({length:COFFEE_COUNT},(_,i)=>({name:`Kaffee ${i+1}`, grind:25, selected:false, key:1})), chooseLimit:4, maints:Array.from({length:MAINT_COUNT},(_,i)=>({name:`Wartung ${i+1}`, interval:30, remaining:30})), lastDate:new Date().toDateString() };
     let settings = JSON.parse(localStorage.getItem(storageKey))||defaultSettings;
-    // Ensure structure
-    settings.coffees.forEach(c=>{ if(!('key' in c)) c.key=1; });
-    while(settings.maints.length<MAINT_COUNT) settings.maints.push({name:`Wartung ${settings.maints.length+1}`, interval:30, remaining:30});
-    function saveAndRender(){ localStorage.setItem(storageKey,JSON.stringify(settings)); renderMain(); }
-    function updateDaily(){ const prev=new Date(settings.lastDate), now=new Date(), diff=Math.floor((now-prev)/(1000*3600*24)); if(diff>0){ settings.maints.forEach(m=>m.remaining=Math.max(0,m.remaining-diff)); settings.lastDate=new Date().toDateString(); saveAndRender(); }}
-    function scheduleMidnight(){ const now=new Date(); const next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,0,5); setTimeout(()=>{ settings.maints.forEach(m=>m.remaining=Math.max(0,m.remaining-1)); settings.lastDate=new Date().toDateString(); saveAndRender(); scheduleMidnight(); }, next-now); }
-    function renderMain(){ document.getElementById('mainScreen').classList.add('active'); document.getElementById('settingsScreen').classList.remove('active'); document.getElementById('settingsBtn').style.display='block'; document.getElementById('backHeaderBtn').style.display='none';
-      const sel=document.getElementById('selectedCoffees'); sel.innerHTML='';
-      settings.coffees.filter(c=>c.selected).slice(0,settings.chooseLimit).forEach(c=>{ const card=document.createElement('div'); card.className='coffee-card'; const txt=`<strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key}</strong>`; card.innerHTML=`<span class='coffee-text'>${txt}</span>`; sel.append(card); });
-      const ml=document.getElementById('maintList'); ml.innerHTML='';
-      settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='maint-card'; const span=document.createElement('span'); span.className='maint-text'; span.innerHTML=`<strong>${m.name}</strong>: <strong>${m.remaining}</strong> Tage`; if(m.remaining<=0) span.classList.add('warning'); const btn=document.createElement('button'); btn.textContent='Reset'; btn.onclick=()=>{ m.remaining=m.interval; saveAndRender(); }; card.append(span,btn); ml.append(card); });
-    }
-    function renderSettings(){ document.getElementById('settingsScreen').classList.add('active'); document.getElementById('mainScreen').classList.remove('active'); document.getElementById('settingsBtn').style.display='none'; document.getElementById('backHeaderBtn').style.display='block';
-      const cs=document.getElementById('coffeeSettingsList'); cs.innerHTML='';
-      settings.coffees.forEach(c=>{ const card=document.createElement('div'); card.className='setting-card'; const chk=document.createElement('input'); chk.type='checkbox'; chk.checked=c.selected; chk.onchange=()=>{ c.selected=chk.checked; saveAndRender(); }; const ni=document.createElement('input'); ni.type='text'; ni.value=c.name; ni.oninput=()=>{ c.name=ni.value; saveAndRender(); }; const gi=document.createElement('input'); gi.type='number'; gi.min=10; gi.max=40; gi.step=1; gi.value=c.grind; gi.onchange=()=>{ c.grind=Math.min(40,Math.max(10,parseInt(gi.value))); saveAndRender(); }; const sl=document.createElement('select'); [1,2,3].forEach(n=>{ const opt=document.createElement('option'); opt.value=n; opt.text=n; if(c.key===n) opt.selected=true; sl.append(opt); }); sl.onchange=()=>{ c.key=parseInt(sl.value); saveAndRender(); }; card.append(chk,ni,gi,sl); cs.append(card); });
-      const ms=document.getElementById('maintenanceSettingsList'); ms.innerHTML='';
-      settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='setting-card'; const ni=document.createElement('input'); ni.type='text'; ni.value=m.name; ni.oninput=()=>{ m.name=ni.value; saveAndRender(); }; const ii=document.createElement('input'); ii.type='number'; ii.min=1; ii.value=m.interval; ii.onchange=()=>{ m.interval=Math.max(1,parseInt(ii.value)); m.remaining=m.interval; saveAndRender(); }; card.append(ni,ii); ms.append(card); });
-    }
+    function renderMain(){ document.getElementById('mainScreen').classList.add('active'); document.getElementById('settingsScreen').classList.remove('active'); document.getElementById('settingsBtn').style.display='block'; document.getElementById('backHeaderBtn').style.display='none'; const sel=document.getElementById('selectedCoffees'); sel.innerHTML=''; settings.coffees.filter(c=>c.selected).slice(0,settings.chooseLimit).forEach(c=>{ const card=document.createElement('div'); card.className='coffee-card'; card.innerHTML=`<span class='coffee-text'><strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key||1}</strong></span>`; sel.append(card); }); const ml=document.getElementById('maintList'); ml.innerHTML=''; settings.maints.forEach(m=>{ const card=document.createElement('div'); card.className='maint-card'; const txt=`<span class='maint-text'><strong>${m.name}</strong>: <strong>${m.remaining}</strong> Tage</span>`; card.innerHTML=txt+`<button onclick="{m.remaining=m.interval;localStorage.setItem('${storageKey}',JSON.stringify(settings));renderMain();}">Reset</button>`; ml.append(card); }); }
+    function renderSettings(){ document.getElementById('settingsScreen').classList.add('active'); document.getElementById('mainScreen').classList.remove('active'); document.getElementById('settingsBtn').style.display='none'; document.getElementById('backHeaderBtn').style.display='block'; const cs=document.getElementById('coffeeSettingsList'); cs.innerHTML=''; settings.coffees.forEach((c,i)=>{ const card=document.createElement('div'); card.className='setting-card'; card.innerHTML=`<input type='checkbox' ${c.selected?'checked':''} onchange='settings.coffees[${i}].selected=this.checked;localStorage.setItem('${storageKey}',JSON.stringify(settings));'> <input type='text' value='${c.name}' onchange='settings.coffees[${i}].name=this.value;localStorage.setItem('${storageKey}',JSON.stringify(settings));'> <input type='number' min='10' max='40' step='1' value='${c.grind}' onchange='settings.coffees[${i}].grind=parseInt(this.value);localStorage.setItem('${storageKey}',JSON.stringify(settings));'> <select onchange='settings.coffees[${i}].key=parseInt(this.value);localStorage.setItem('${storageKey}',JSON.stringify(settings));'>${[1,2,3].map(n=>`<option value='${n}' ${c.key===n?'selected':''}>${n}</option>`).join('')}</select>`; cs.append(card); }); const ms=document.getElementById('maintenanceSettingsList'); ms.innerHTML=''; settings.maints.forEach((m,i)=>{ const card=document.createElement('div'); card.className='setting-card'; card.innerHTML=`<input type='text' value='${m.name}' onchange='settings.maints[${i}].name=this.value;localStorage.setItem('${storageKey}',JSON.stringify(settings));'> <input type='number' min='1' value='${m.interval}' onchange='settings.maints[${i}].interval=parseInt(this.value);settings.maints[${i}].remaining=settings.maints[${i}].interval;localStorage.setItem('${storageKey}',JSON.stringify(settings));'>`; ms.append(card); }); }
     document.getElementById('settingsBtn').onclick=renderSettings;
-    document.getElementById('backHeaderBtn').onclick=()=>saveAndRender();
-    document.addEventListener('DOMContentLoaded',()=>{ updateDaily(); scheduleMidnight(); renderMain(); });
-    document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ updateDaily(); renderMain(); }});
+    document.getElementById('backHeaderBtn').onclick=renderMain;
+    document.addEventListener('DOMContentLoaded',renderMain);
   </script>
 </body>
 </html>
