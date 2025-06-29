@@ -113,7 +113,7 @@
         .forEach(c => {
           const card = document.createElement('div'); card.className = 'coffee-card';
           const span = document.createElement('span'); span.className = 'coffee-text';
-          span.innerHTML = `<strong>${c.name}</strong> (Taste: <strong>${c.key}</strong>): Mahlgrad <strong>${c.grind}</strong>`;
+          span.innerHTML = `<strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key}</strong>`;
           card.append(span);
           sel.append(card);
         });
