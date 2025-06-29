@@ -12,61 +12,26 @@
     header h1 { margin:0; font-size:1.2rem; font-weight:600; }
     button { background:#FF8C00; border:none; color:#fff; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; font-weight:600; }
     #backHeaderBtn { display:none; }
-    main { flex:1; display:flex; overflow:hidden; }
+    main { flex:1; display:flex; }
     #mainScreen, #settingsScreen { flex:1; display:none; }
     #mainScreen.active, #settingsScreen.active { display:flex; }
     .panel { background:#E3F2FD; flex:1; margin:0.5rem; border-radius:10px; display:flex; flex-direction:column; }
     .panel h2 { margin:0; padding:0.5rem; background:#007BFF; color:#fff; text-align:center; font-weight:600; }
-    .panel-content { flex:1; padding:0.5rem; overflow-y:auto; }
+    .panel-content { flex:1; overflow-y:auto; padding:0.5rem; }
     .coffee-card, .maint-card { background:#FFFDE7; margin:0.25rem 0; padding:0.5rem; border-radius:6px; display:flex; justify-content:space-between; align-items:center; }
-    .setting-card {
-      /* Mirror grid defined for headers */
-      display: grid;
-      grid-template-columns: auto 2fr 1fr 1fr;
-      column-gap: 0.5rem;
-      align-items: center;
-      background: #FFE0B2;
-      padding: 0.5rem;
-      margin: 0.25rem 0;
-      border-radius: 6px;
-    }
+    /* Settings */
     .settings-column { flex:1; display:flex; flex-direction:column; margin:0.5rem; background:#FFF3E0; border-radius:10px; }
     .settings-column h2 { margin:0; padding:0.5rem; background:#007BFF; color:#fff; text-align:center; font-weight:600; }
-    .settings-header {
-      /* Grid layout to align columns */
-      display: grid;
-      grid-template-columns: auto 2fr 1fr 1fr;
-      column-gap: 0.5rem;
-      align-items: center;
-      padding: 0.5rem;
-      background: #FFFDE7;
-      border-radius: 6px;
-      margin: 0.25rem 0;
-      font-weight: 600;
-    }
-    .settings-header span:first-child {
-      flex:0 0 1.5rem;
-    }
-    .settings-header span.col-name {
-      flex:1;
-      text-align:left;
-      padding-left:0.5rem;
-    }
-    .settings-header span.col-grind,
-    .settings-header span.col-key,
-    .settings-header span.col-interval {
-      flex:0 0 4rem;
-      text-align:center;
-      padding-left:0.5rem;
-    }
-    .settings-header span { flex:1; }
-    .settings-header span:first-child { flex:0 0 1.5rem; }
-    .settings-header .col-name { flex:2; text-align:left; margin-left:0.5rem; }
-    .settings-header .col-grind, .settings-header .col-key, .settings-header .col-interval { flex:1; text-align:center; margin-left:0.5rem; }
-    .settings-list { flex:1; padding:0.5rem; overflow-y:auto; }
-    input[type=text] { flex:2; margin-left:0.5rem; padding:0.4rem; border-radius:6px; border:1px solid #ccc; }
-    input[type=number], select { flex:1; margin-left:0.5rem; padding:0.4rem; border-radius:6px; border:1px solid #ccc; max-width:4rem; }
-    input[type=checkbox] { margin-right:0.5rem; }
+    .settings-list { flex:1; overflow-y:auto; padding:0.5rem; }
+    .settings-header { display:flex; font-weight:600; padding:0.5rem; }
+    .settings-header span { flex:1; text-align:center; }
+    .settings-header .col-name { text-align:left; }
+    .settings-header .col-grind, .settings-header .col-key { text-align:center; }
+    .settings-header .col-interval { text-align:center; }
+    .setting-card { display:flex; align-items:center; background:#FFE0B2; padding:0.5rem; margin:0.25rem 0; border-radius:6px; }
+    .setting-card input[type=checkbox] { margin-right:0.5rem; }
+    .setting-card input[type=text] { flex:2; margin-left:0.5rem; padding:0.4rem; border:1px solid #ccc; border-radius:6px; }
+    .setting-card input[type=number], .setting-card select { flex:1; margin-left:0.5rem; padding:0.4rem; border:1px solid #ccc; border-radius:6px; max-width:4rem; }
   </style>
 </head>
 <body>
@@ -76,7 +41,6 @@
     <button id="settingsBtn">Einstellungen</button>
   </header>
   <main>
-    <!-- Hauptseite -->
     <div id="mainScreen" class="active">
       <div class="panel">
         <h2>Kaffeesorten</h2>
@@ -87,25 +51,18 @@
         <div class="panel-content" id="maintList"></div>
       </div>
     </div>
-    <!-- Einstellungen -->
     <div id="settingsScreen">
       <div class="settings-column">
         <h2>Kaffee Einstellungen</h2>
         <div class="settings-header">
-          <span></span>
-          <span class="col-name">Kaffee</span>
-          <span class="col-grind">Mahlgrad</span>
-          <span class="col-key">Taste</span>
+          <span></span><span class="col-name">Kaffee</span><span class="col-grind">Mahlgrad</span><span class="col-key">Taste</span>
         </div>
         <div class="settings-list" id="coffeeSettingsList"></div>
       </div>
       <div class="settings-column">
         <h2>Wartungs Einstellungen</h2>
         <div class="settings-header">
-          <span></span>
-          <span class="col-name">Wartungstext</span>
-          <span class="col-interval">Intervall (Tage)</span>
-          <span></span>
+          <span></span><span class="col-name">Wartungstext</span><span class="col-interval">Intervall (Tage)</span><span></span>
         </div>
         <div class="settings-list" id="maintenanceSettingsList"></div>
       </div>
@@ -120,40 +77,28 @@
     };
     let settings=JSON.parse(localStorage.getItem(storageKey))||defaultSettings;
     function save(){localStorage.setItem(storageKey,JSON.stringify(settings));}
-    function showMain(){
-      document.getElementById('mainScreen').classList.add('active');
-      document.getElementById('settingsScreen').classList.remove('active');
-      document.getElementById('settingsBtn').style.display='block';
-      document.getElementById('backHeaderBtn').style.display='none';
-      renderMain();
-    }
-    function showSettings(){
-      document.getElementById('settingsScreen').classList.add('active');
-      document.getElementById('mainScreen').classList.remove('active');
-      document.getElementById('settingsBtn').style.display='none';
-      document.getElementById('backHeaderBtn').style.display='block';
-      renderSettings();
-    }
+    function showMain(){document.getElementById('mainScreen').classList.add('active');document.getElementById('settingsScreen').classList.remove('active');document.getElementById('settingsBtn').style.display='block';document.getElementById('backHeaderBtn').style.display='none';renderMain();}
+    function showSettings(){document.getElementById('settingsScreen').classList.add('active');document.getElementById('mainScreen').classList.remove('active');document.getElementById('settingsBtn').style.display='none';document.getElementById('backHeaderBtn').style.display='block';renderSettings();}
     document.getElementById('settingsBtn').onclick=showSettings;
     document.getElementById('backHeaderBtn').onclick=showMain;
     function renderMain(){
-      const sel=document.getElementById('selectedCoffees'); sel.innerHTML='';
+      const sel=document.getElementById('selectedCoffees');sel.innerHTML='';
       settings.coffees.filter(c=>c.selected).slice(0,KEY_LIMIT).forEach(c=>{
-        const d=document.createElement('div'); d.className='coffee-card';
+        const d=document.createElement('div');d.className='coffee-card';
         d.innerHTML=`<span><strong>${c.name}</strong>, Mahlgrad <strong>${c.grind}</strong>, Taste <strong>${c.key}</strong></span>`;
         sel.append(d);
       });
-      const ml=document.getElementById('maintList'); ml.innerHTML='';
+      const ml=document.getElementById('maintList');ml.innerHTML='';
       settings.maints.forEach(m=>{
-        const d=document.createElement('div'); d.className='maint-card';
+        const d=document.createElement('div');d.className='maint-card';
         d.innerHTML=`<span><strong>${m.name}</strong>: ${m.remaining} Tage</span><button onclick='m.remaining=m.interval;save();renderMain();'>Reset</button>`;
         ml.append(d);
       });
     }
     function renderSettings(){
-      const cl=document.getElementById('coffeeSettingsList'); cl.innerHTML='';
+      const cl=document.getElementById('coffeeSettingsList');cl.innerHTML='';
       settings.coffees.forEach((c,i)=>{
-        const d=document.createElement('div'); d.className='setting-card';
+        const d=document.createElement('div');d.className='setting-card';
         d.innerHTML=
           `<input type='checkbox' ${c.selected?'checked':''} onchange='settings.coffees[${i}].selected=this.checked;save();'>`+
           `<input type='text' value='${c.name}' onchange='settings.coffees[${i}].name=this.value;save();'>`+
@@ -161,17 +106,13 @@
           `<select onchange='settings.coffees[${i}].key=parseInt(this.value);save();'>${[1,2,3].map(n=>`<option value='${n}'${c.key===n?' selected':''}>${n}</option>`).join('')}</select>`;
         cl.append(d);
       });
-      const ml=document.getElementById('maintenanceSettingsList'); ml.innerHTML='';
+      const ml=document.getElementById('maintenanceSettingsList');ml.innerHTML='';
       settings.maints.forEach((m,i)=>{
-        const d=document.createElement('div'); d.className='setting-card';
-        // Alignment spans + inputs
+        const d=document.createElement('div');d.className='setting-card';
         d.innerHTML=
-          `<span></span>`+
           `<input type='text' value='${m.name}' onchange='settings.maints[${i}].name=this.value;save();'>`+
-          `<input type='number' min='1' value='${m.interval}' onchange='settings.maints[${i}].interval=parseInt(this.value);m.remaining=m.interval;save();'>`+
-          `<span></span>`;
+          `<input type='number' min='1' value='${m.interval}' onchange='settings.maints[${i}].interval=parseInt(this.value);m.remaining=m.interval;save();'>`;
         ml.append(d);
-      });
       });
     }
     document.addEventListener('DOMContentLoaded',showMain);
