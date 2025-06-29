@@ -8,30 +8,134 @@
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    html, body { margin: 0; padding: 0; height: 100vh; background: #f0f4f8; font-family: 'Poppins', sans-serif; color: #333; padding-bottom: env(safe-area-inset-bottom,20px); }
-    header { background: #007BFF; color: #fff; padding: 0.5rem 0.75rem; display: flex; justify-content: space-between; align-items: center; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #f0f4f8;
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+      padding-bottom: env(safe-area-inset-bottom,20px);
+    }
+    header {
+      background: #007BFF;
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     header h1 { margin: 0; font-weight: 600; font-size: 1.1rem; }
-    #settingsBtn, #backHeaderBtn { background: #FF8C00; border: none; color: #fff; padding: 0.4rem 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    #settingsBtn, #backHeaderBtn {
+      background: #FF8C00;
+      border: none;
+      color: #fff;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
     #backHeaderBtn { display: none; }
-    main { flex: 1; display: flex; flex-direction: row; overflow: hidden; }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+    }
     #mainScreen, #settingsScreen { flex: 1; display: none; overflow: hidden; }
     #mainScreen.active, #settingsScreen.active { display: flex; }
-    .panel { background: #E3F2FD; flex: 1; margin: 0.25rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
-    .panel h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; font-weight: 600; text-align: center; font-size: 1rem; }
-    .panel-content { flex: 1; padding: 1rem 0.5rem; display: flex; flex-direction: column; overflow-y: auto; }
-    .coffee-card, .maint-card { background: #FFFDE7; border-radius: 6px; padding: 0.5rem; margin: 0.25rem 0; display: flex; align-items: center; justify-content: space-between; min-height: 2.5rem; }
+    .panel {
+      background: #E3F2FD;
+      flex: 1;
+      margin: 0.25rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel h2 {
+      margin: 0;
+      padding: 0.5rem;
+      background: #007BFF;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .panel-content {
+      flex: 1;
+      padding: 1rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .coffee-card, .maint-card {
+      background: #FFFDE7;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin: 0.25rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 2.5rem;
+    }
     .coffee-text, .maint-text { font-size: 0.95rem; }
     .coffee-text strong, .maint-text strong { font-weight: bold; }
     .warning { color: red; font-weight: bold; margin-left: 4px; }
     .maint-left { display: flex; align-items: baseline; }
-    .maint-card button { background: #FF8C00; border: none; border-radius: 6px; padding: 0.25rem 0.75rem; color: #fff; cursor: pointer; font-size: 0.9rem; }
+    .maint-card button {
+      background: #FF8C00;
+      border: none;
+      border-radius: 6px;
+      padding: 0.25rem 0.75rem;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
     #settingsScreen { flex-direction: row; }
-    .settings-column { flex: 1; display: flex; flex-direction: column; margin: 0.5rem; background: #FFF3E0; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); overflow: hidden; }
-    .settings-column h2 { margin: 0; padding: 0.75rem; background: #007BFF; color: #fff; font-weight: 600; text-align: center; font-size: 1rem; }
-    .settings-list { flex: 1; padding: 0.5rem; overflow-y: auto; }
-    .setting-card { background: #FFE0B2; border: 1px solid #ccc; border-radius: 8px; padding: 0.75rem; margin: 0.5rem 0; display: flex; flex-direction: column; }
+    .settings-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin: 0.5rem;
+      background: #FFF3E0;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .settings-column h2 {
+      margin: 0;
+      padding: 0.75rem;
+      background: #007BFF;
+      color: #fff;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .settings-list {
+      flex: 1;
+      padding: 0.5rem;
+      overflow-y: auto;
+    }
+    .setting-card {
+      background: #FFE0B2;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      display: flex;
+      flex-direction: column;
+    }
     .setting-card input[type="checkbox"] { margin-bottom: 0.5rem; }
-    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select { margin-top: 0.25rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
+    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select {
+      margin-top: 0.25rem;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
     #backBtn { display: none; }
   </style>
 </head>
@@ -109,24 +213,4 @@
       const cs = document.getElementById('coffeeSettingsList'); cs.innerHTML = '';
       settings.coffees.forEach(c => {
         const card = document.createElement('div'); card.className = 'setting-card';
-        const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = c.selected; chk.onchange = () => { c.selected = chk.checked; saveSettings(); };
-        const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.value = c.name; nameInput.oninput = () => { c.name = nameInput.value; saveSettings(); };
-        const grindInput = document.createElement('input'); grindInput.type = 'number'; grindInput.min = 10; grindInput.max = 40; grindInput.step = 1; grindInput.value = c.grind; grindInput.onchange = () => { c.grind = Math.min(40, Math.max(10, parseInt(grindInput.value))); saveSettings(); };
-        card.append(chk, nameInput, grindInput);
-        cs.append(card);
-      });
-      const ms = document.getElementById('maintenanceSettingsList'); ms.innerHTML = '';
-      settings.maints.forEach(m => {
-        const card = document.createElement('div'); card.className = 'setting-card';
-        const nameInput = document.createElement('input'); nameInput.type = 'text'; nameInput.value = m.name; nameInput.oninput = () => { m.name = nameInput.value; saveSettings(); };
-        const intervalInput = document.createElement('input'); intervalInput.type = 'number'; intervalInput.min = 1; intervalInput.value = m.interval; intervalInput.onchange = () => { m.interval = Math.max(1, parseInt(intervalInput.value)); m.remaining = m.interval; saveSettings(); };
-        card.append(nameInput, intervalInput);
-        ms.append(card);
-      });
-    }
-    document.getElementById('settingsBtn').onclick = renderSettings;
-    document.getElementById('backHeaderBtn').onclick = renderMain;
-    document.addEventListener('DOMContentLoaded', renderMain);
-  </script>
-</body>
-</html>
+        const chk = document.createElement('input'); chk.type = 'checkbox'; chk.checked = c.selected; chk.onchange = () => { c.selected = chk
