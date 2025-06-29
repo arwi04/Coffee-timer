@@ -34,7 +34,32 @@
     .settings-list { flex: 1; overflow-y: auto; padding: 0.5rem; }
 
     /* Header Row in Settings */
-    .settings-header { display: flex; font-weight: 600; padding: 0.5rem; }
+    .settings-header {
+      /* Use grid matching setting-card children */
+      display: grid;
+      grid-template-columns: auto 2fr auto auto;
+      column-gap: 0.5rem;
+      align-items: center;
+      padding: 0.5rem;
+      background: #FFFDE7;
+      border-radius: 6px;
+      margin: 0.25rem 0;
+      font-weight: 600;
+    }
+    .settings-header span { }
+    .settings-header span:first-child {
+      /* placeholder for checkbox */
+    }
+    .settings-header .col-name {
+      /* align left of text input */
+      justify-self: start;
+    }
+    .settings-header .col-grind,
+    .settings-header .col-key,
+    .settings-header .col-interval {
+      /* align above number/select */
+      justify-self: start;
+    }
     .settings-header span { flex: 1; text-align: center; }
     .settings-header .col-name { text-align: left; }
     .settings-header .col-grind, .settings-header .col-key, .settings-header .col-interval { text-align: center; }
