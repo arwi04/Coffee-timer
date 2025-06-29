@@ -35,6 +35,15 @@
     .setting-card input[type="checkbox"] { margin-right: 0.5rem; }
     .setting-card input[type="text"] { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; flex: 2; }
     .setting-card input[type="number"], .setting-card select { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; flex: 1; }
+      /* Wartungs-Einstellungen: Wartungstext breiter, Intervall-Feld schmaler */
+    #maintenanceSettingsList .setting-card input[type="text"] {
+      flex: 3;
+      min-width: 8rem;
+    }
+    #maintenanceSettingsList .setting-card input[type="number"] {
+      flex: 0 0 3rem;
+      max-width: 3rem;
+    }
   </style>
 </head>
 <body>
