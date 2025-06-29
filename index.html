@@ -31,7 +31,15 @@
     .settings-list { flex: 1; padding: 0.5rem; overflow-y: auto; }
     .setting-card { background: #FFE0B2; border: 1px solid #ccc; border-radius: 8px; padding: 0.75rem; margin: 0.25rem 0; display: flex; align-items: center; }
     .setting-card input[type="checkbox"] { margin-right: 0.5rem; }
-    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select { margin-left: 0.5rem; padding: 0.4rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; }
+    .setting-card input[type="text"], .setting-card input[type="number"], .setting-card select {
+      margin-left: 0.5rem;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      /* Einheitliche schmale Breite für Number- und Select-Felder */
+      width: 4rem;
+    }
   </style>
 </head>
 <body>
@@ -80,19 +88,48 @@
     }
     if (settings.maints.length < MAINT_COUNT) {
       for (let i = settings.maints.length; i < MAINT_COUNT; i++) {
-        settings.maints.push({name: `Wartung ${i+1}`, interval: 30, remaining: 30});
+        settings.maints.push({ name: `Wartung ${i+1}`, interval: 30, remaining: 30 });
       }
       settings.lastDate = today;
     }
-    // Daily countdown update
+    
+    // Check and update daily countdown on load and resume
+    function checkDailyUpdate() {
+      const todayStr = new Date().toDateString();
+      const prevDate = new Date(settings.lastDate);
+      const diff = Math.floor((new Date(todayStr) - prevDate) / (1000 * 3600 * 24));
+      if (diff > 0) {
+        settings.maints.forEach(m => m.remaining = Math.max(0, m.remaining - diff));
+        settings.lastDate = todayStr;
+        saveSettings();
+      }
+    }
+    
+    // Schedule next midnight update
     function updateAtMidnight() {
       const now = new Date();
       const nextMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5);
       setTimeout(() => {
-        settings.maints.forEach(m => m.remaining = Math.max(0, m.remaining-1));
+        settings.maints.forEach(m => m.remaining = Math.max(0, m.remaining - 1));
         settings.lastDate = new Date().toDateString();
         saveAndRender();
         updateAtMidnight();
+      }, nextMid - now);
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      checkDailyUpdate();
+      renderMain();
+      updateAtMidnight();
+    });
+    
+    // Also check when app becomes visible (e.g., resumed)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        checkDailyUpdate();
+        renderMain();
+      }
+    });
       }, nextMid - now);
     }
     // Save settings
