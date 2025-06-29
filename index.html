@@ -14,7 +14,11 @@
     #settingsBtn, #backHeaderBtn { background: #FF8C00; border: none; color: #fff; padding: 0.4rem 0.75rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
     #backHeaderBtn { display: none; }
     main { flex: 1; display: flex; flex-direction: row; overflow: hidden; }
-    #mainScreen, #settingsScreen { flex: 1; display: none; overflow: hidden; }
+    #mainScreen, #settingsScreen { flex-direction: row; }
+    /* Linke Spalte (Kaffees): flexibel */
+    #settingsScreen > .settings-column:first-child { flex: 1; }
+    /* Rechte Spalte (Wartungen): schmaler */
+    #settingsScreen > .settings-column:last-child { flex: 0 0 30%; }
     #mainScreen.active, #settingsScreen.active { display: flex; }
     .panel { background: #E3F2FD; flex: 1; margin: 0.25rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
     .panel h2 { margin: 0; padding: 0.5rem; background: #007BFF; color: #fff; font-weight: 600; text-align: center; font-size: 1rem; }
