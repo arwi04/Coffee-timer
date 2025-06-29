@@ -24,7 +24,28 @@
     .settings-column { flex:1; display:flex; flex-direction:column; margin:0.25rem; background:#FFF3E0; border-radius:10px; }
     .settings-column h2 { margin:0; padding:0.5rem; background:#007BFF; color:#fff; text-align:center; font-weight:600; }
     .settings-list { flex:1; padding:0.5rem; overflow-y:auto; }
-    .settings-header { display:flex; align-items:center; font-weight:600; padding:0 0.5rem; }
+    .settings-header {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      padding: 0 0.5rem;
+    }
+    /* Reserve space for checkbox column */
+    .settings-header span:first-child {
+      flex: 0 0 1.5rem;
+    }
+    .settings-header .col-name {
+      flex: 2;
+      margin-left: 0.5rem;
+      text-align: left;
+    }
+    .settings-header .col-grind,
+    .settings-header .col-key,
+    .settings-header .col-interval {
+      flex: 1;
+      margin-left: 0.5rem;
+      text-align: center;
+    }
     .settings-header span { padding-left:0.5rem; }
     .col-name { flex:2; }
     .col-grind, .col-key, .col-interval { flex:1; text-align:center; }
